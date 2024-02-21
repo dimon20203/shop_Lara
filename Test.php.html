@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>Test.php</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #9876aa;}
+.s4 { color: #6a8759;}
+.s5 { color: #a9b7c6;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Test.php</font>
+</center></td></tr></table>
+<pre><span class="s0">&lt;?php</span>
+
+<span class="s2">// Шлях до вашого Blade-шаблону</span>
+<span class="s3">$templatePath </span><span class="s1">= </span><span class="s4">'resources/views/test.blade.php'</span><span class="s0">;</span>
+
+<span class="s2">// Отримання вмісту шаблону</span>
+<span class="s3">$template </span><span class="s1">= </span><span class="s5">file_get_contents</span><span class="s1">(</span><span class="s3">$templatePath</span><span class="s1">)</span><span class="s0">;</span>
+
+<span class="s2">// Паттерн для заміни link тегів</span>
+<span class="s3">$patternLink </span><span class="s1">= </span><span class="s4">'/&lt;link\s+rel=&quot;stylesheet&quot;\s+href=&quot;([^&quot;]+)&quot;&gt;/'</span><span class="s0">;</span>
+<span class="s3">$replacementLink </span><span class="s1">= </span><span class="s4">'&lt;link rel=&quot;stylesheet&quot; href=&quot;{{ asset(</span><span class="s0">\'</span><span class="s4">$1</span><span class="s0">\'</span><span class="s4">) }}&quot;&gt;'</span><span class="s0">;</span>
+
+<span class="s2">// Паттерн для заміни script тегів</span>
+<span class="s3">$patternScript </span><span class="s1">= </span><span class="s4">'/&lt;script\s+src=&quot;([^&quot;]+)&quot;&gt;&lt;\/script&gt;/'</span><span class="s0">;</span>
+<span class="s3">$replacementScript </span><span class="s1">= </span><span class="s4">'&lt;script src=&quot;{{ asset(</span><span class="s0">\'</span><span class="s4">$1</span><span class="s0">\'</span><span class="s4">) }}&quot;&gt;&lt;/script&gt;'</span><span class="s0">;</span>
+
+<span class="s2">// Паттерн для заміни img тегів</span>
+<span class="s3">$patternImg </span><span class="s1">= </span><span class="s4">'/&lt;img\s+src=&quot;([^&quot;]+)&quot;\s+.*?&gt;/'</span><span class="s0">; </span><span class="s2">// Цей паттерн припускає, що src є першим атрибутом у тезі img</span>
+<span class="s3">$replacementImg </span><span class="s1">= </span><span class="s4">'&lt;img src=&quot;{{ asset(</span><span class="s0">\'</span><span class="s4">$1</span><span class="s0">\'</span><span class="s4">) }}&quot; $2&gt;'</span><span class="s0">;</span>
+
+<span class="s2">// Паттерн для заміни link тегів без атрибута rel=&quot;stylesheet&quot;</span>
+<span class="s3">$patternLinkWithoutRel </span><span class="s1">= </span><span class="s4">'/&lt;link\s+href=&quot;([^&quot;]+)&quot;[^&gt;]*&gt;/'</span><span class="s0">;</span>
+<span class="s3">$replacementLinkWithoutRel </span><span class="s1">= </span><span class="s4">'&lt;link href=&quot;{{ asset(</span><span class="s0">\'</span><span class="s4">$1</span><span class="s0">\'</span><span class="s4">) }}&quot; rel=&quot;stylesheet&quot;&gt;'</span><span class="s0">;</span>
+
+<span class="s2">// Заміна link тегів у шаблоні</span>
+<span class="s3">$content </span><span class="s1">= </span><span class="s5">preg_replace</span><span class="s1">(</span><span class="s3">$patternLink</span><span class="s0">, </span><span class="s3">$replacementLink</span><span class="s0">, </span><span class="s3">$template</span><span class="s1">)</span><span class="s0">;</span>
+
+<span class="s2">// Заміна link тегів без атрибута rel=&quot;stylesheet&quot; у шаблоні</span>
+<span class="s3">$content </span><span class="s1">= </span><span class="s5">preg_replace</span><span class="s1">(</span><span class="s3">$patternLinkWithoutRel</span><span class="s0">, </span><span class="s3">$replacementLinkWithoutRel</span><span class="s0">, </span><span class="s3">$content</span><span class="s1">)</span><span class="s0">;</span>
+
+<span class="s2">// Заміна script тегів у шаблоні</span>
+<span class="s3">$content </span><span class="s1">= </span><span class="s5">preg_replace</span><span class="s1">(</span><span class="s3">$patternScript</span><span class="s0">, </span><span class="s3">$replacementScript</span><span class="s0">, </span><span class="s3">$content</span><span class="s1">)</span><span class="s0">;</span>
+
+<span class="s2">// Заміна img тегів у шаблоні</span>
+<span class="s3">$content </span><span class="s1">= </span><span class="s5">preg_replace</span><span class="s1">(</span><span class="s3">$patternImg</span><span class="s0">, </span><span class="s3">$replacementImg</span><span class="s0">, </span><span class="s3">$content</span><span class="s1">)</span><span class="s0">;</span>
+
+<span class="s2">// Запис зміненого змісту назад у файл</span>
+<span class="s5">file_put_contents</span><span class="s1">(</span><span class="s3">$templatePath</span><span class="s0">, </span><span class="s3">$content</span><span class="s1">)</span><span class="s0">;</span>
+
+<span class="s0">echo </span><span class="s4">&quot;Зміни внесено успішно!&quot;</span><span class="s0">;</span>
+</pre>
+</body>
+</html>
